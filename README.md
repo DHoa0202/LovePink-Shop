@@ -11,4 +11,4 @@ LovePink-Store là trang quản lý và mua bán sản phẩm thời trang. Đâ
 Web app được viết bằng Spring theo mô hình MVC. Hệ thống Lovepink trả về các APIs khi người dùng gọi tới các methods được mapping với GET và thêm, ửa,xóa bằng các methods POST, PUT, DELETE. 
 Về bảo mật người dùng đăng nhập bằng google hoặc facebook. có 3 vai trò là DIRE(director), CUST(customer), GUEST(guest).
 
-<h3><em>Hiện tại mình cũng đang viết một web APIs với nội dung là</em></h3>[RR-s](https://drive.google.com/drive/folders/1ZIKCk5TmzG2e32TNBFQgDZLbtNz4b-Hj?usp=sharing)
+<h3><em>Hiện tại mình cũng đang viết một web APIs</em></h3> [RR-S](https://drive.google.com/drive/folders/1ZIKCk5TmzG2e32TNBFQgDZLbtNz4b-Hj?usp=sharing)
