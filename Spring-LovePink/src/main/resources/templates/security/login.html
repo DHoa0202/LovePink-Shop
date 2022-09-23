@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns="http://www.thymeleaf.org" th:replace="~{/index :: dynamic(~{::div})}">
+<head>
+<meta charset="UTF-8">
+<title>Login page</title>
+</head>
+<body>
+	<div class="d-flex">
+		<div class="col-10 border-top border-info border-3 p-3 container">		
+			<div th:utext="${message}"></div>
+			<form action="/security/login" method="post" class="rounded-3 border p-3 m-auto">
+				<div class="mt-3 d-flex justify-content-between">
+					<h3 class="text-center">Login</h3>
+					<div class="ms-auto">
+						<a class="btn btn-primary" href="/security/login/auth2/facebook">
+							<i class="fa-brands fa-facebook"></i>&nbsp;Facebook
+						</a>
+						<a class="btn btn-danger" href="/security/login/auth2/google">
+							<i class="fa-brands fa-google"></i>&nbsp;Google
+						</a>
+					</div>
+				</div>
+				<div class="mt-3">
+					<label class="form-label fw-bold">Username</label>
+					<input type="text" name="username" class="form-control text-end" placeholder="Input your username?">
+				</div>
+				<div class="mt-3">
+					<label class="form-label fw-bold" for="password">Password</label>
+					<div class="input-group">
+						<input type="password" name="password" id="password" class="form-control text-end"
+						placeholder="Input your password?">
+						<div class="input-group-text">
+							<i class="fa-solid fa-eye-slash" onclick="showPass('#password', this)"></i>
+						</div>
+					</div>
+				</div>
+				<div class="mt-3 text-end">
+					<input type="checkbox" name="remember-me">
+					<span class="form-check-label">Remember me?</span>
+				</div>
+				<div class="mt-3 text-end">
+					<button class="btn btn-outline-primary" type="submit">Submit</button>
+					<button class="btn btn-outline-secondary" type="reset">Reset</button>
+				</div>
+			</form>				
+		</div>
+	</div>
+</body>
+</html>

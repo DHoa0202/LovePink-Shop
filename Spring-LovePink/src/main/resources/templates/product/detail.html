@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace = "~{/index :: dynamic(~{::main})}">
+<head></head>
+<body>
+    <main class="mt-2" th:object = "${item}">
+		<h1 class="p-1 fw-bold text-warning bg-dark">XEM CHI TIẾT SẢN PHẨM</h1>
+		<div class="d-flex">
+			<div class="col-md-4 p-3">
+				<img class="card-img-top border rounded-3 border-info" th:src="*{image}" alt="*{name}">
+			</div>
+			<div class="col-md-8">
+				<h3 class="p-1 text-center fw-bold text-warning bg-dark">Thông tin</h3>
+				<div class="mt-1"><h1>Tên:[[*{name}]]</h1></div>
+				<div class="mt-1"><h1>Giá:[[*{price}]]</h1></div>
+				<div class="mt-1"><h1>Ngày:[[*{createDate}]]</h1></div>
+			</div>
+		</div>
+		<h1 class="p-1 fw-bold text-warning bg-dark text-uppercase">[[*{category.name}]] cùng Loại</h1>
+		<div class="d-flex overflow-auto w-100 flex-wrap">
+			<div class="col-2 p-1" th:each = "p:*{category.products}">
+				<div class="rounded-3 border p-1">
+					<img alt="${p.name}" th:src="${p.image}" class="w-100" style="object-fit:cover;">
+					<a th:href="@{|/product/detail/${p.id}|}" class="w-100 btn btn-outline-warning">[[${p.name}]]</a>
+				</div>	
+			</div>
+		</div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{/index :: dynamic(~{::main})}">
+<body>
+	<main th:object="${order}">
+		<h3 class="bg-dark text-warning text-center p-1">ĐƠN HÀNG</h3>
+		<div class="panel panel-primary">
+			<div class="d-flex flex-wrap">
+				<div class="col-sm-2">
+					<div id="qrOrder"></div>
+				</div>
+                <div class="col-sm-10">
+                	<div class="row h-100 align-items-end">
+                		<div class="form-group col-sm-4">
+		                    <label class="fw-bold">Mã đơn hàng</label>
+		                    <span class="border rounded-3 p-1 w-100">[[*{id}]]</span>
+		                </div>
+		                <div class="form-group col-sm-4">
+		                    <label class="fw-bold">Người đặt</label>
+		                    <span class="border rounded-3 p-1 w-100">[[*{account.username}]]</span>
+		                    <span class="border rounded-3 p-1 w-100">[[*{account.fullname}]]</span>
+		                </div>
+		                <div class="form-group col-sm-4">
+		                    <label class="fw-bold">Thời gian tạo</label>
+		                    <span class="border rounded-3 p-1 w-100">[[*{createDate}]]</span>
+		                </div>
+                	</div>
+                </div>
+                <div class="form-group col-sm-12">
+                    <div class="fw-bold">Địa chỉ</div>
+                    <textarea th:field="*{address}" class="form-control" readonly></textarea>
+                </div>
+            </div>
+		</div>
+		<h4 class="mt-2 bg-dark text-warning text-start p-1">Hàng đặt</h4>
+		<table class="table table-hover bg-success">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Name</th>
+					<th>Price</th>
+					<th>Quantity</th>
+					<th>Amount</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="detail:*{orderDetails}" th:object="${detail}">
+					<td>[[*{product.id}]]</td>
+					<td>[[*{product.name}]]</td>
+					<td>[[*{#numbers.formatDecimal(price,0,'COMMA',2,'POINT')}]]</td>
+					<td>[[*{quantity}]]</td>
+					<td>[[*{#numbers.formatDecimal(price*quantity,0,'COMMA',2,'POINT')}]]</td>
+				</tr>
+			</tbody>
+		</table>
+		<script type="text/javascript">
+		function generalQR(element, qrText) {
+		    element.innerHTML = null;
+		    new QRCode(element, {
+		        text: qrText,
+		        width: 128,
+		        height: 128,
+		        colorDark: "#000000",
+		        colorLight: "#ffffff",
+		        correctLevel: QRCode.CorrectLevel.H
+			})
+		}
+		// ##################Mapping bị trùng lặp order mapping####################
+		var data = ["id:[[*{id}]]","date:[[*{createDate}]]","address:[[*{address}]]","username:[[*{account.username}]]"];
+		generalQR(document.querySelector("#qrOrder"), data.toString());
+		</script>
+	</main>
+</body>
+</html>

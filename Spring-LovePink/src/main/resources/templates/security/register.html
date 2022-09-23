@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns="http://www.thymeleaf.org" th:replace="~{/index :: dynamic(~{::main})}">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<main>
+        <h1 class="bg-warning fw-bold p-2">ĐĂNG KÝ TÀI KHOẢN</h1>
+		<div class="d-flex">
+		
+			<!-- Carousel about our -->
+            <div class="col-md-4">
+                <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <div class="m-1 p-1 border rounded-3 border-info">
+                                <label class="form-label text-center w-100 fw-bold">ps18053</label>
+                                <img src="https://upload.wikimedia.org/wikipedia/vi/2/2c/Nobita.png" class="w-100 h-100" style="object-fit: cover;">
+                                <div class="text-muted text-center">Nguyễn Bá Hoàng</div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="m-1 p-1 border rounded-3 border-info">
+                                <label class="form-label text-center w-100 fw-bold">ps18009</label>
+                                <img src="https://upload.wikimedia.org/wikipedia/vi/thumb/3/3e/Shizuka.png/240px-Shizuka.png" class="w-100 h-100" style="object-fit: cover;">
+                                <div class="text-muted text-center">Bùi Quốc Thịnh</div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="m-1 p-1 border rounded-3 border-info">
+                                <label class="form-label text-center w-100 fw-bold">ps18066</label>
+                                <img src="https://upload.wikimedia.org/wikipedia/en/b/bd/Doraemon_character.png" class="w-100 h-100" style="object-fit: cover;">
+                                <div class="text-muted text-center">Hồ Nguyên Quốc</div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="m-1 p-1 border rounded-3 border-info">
+                                <label class="form-label text-center w-100 fw-bold">ps18107</label>
+                                <img src="https://upload.wikimedia.org/wikipedia/vi/thumb/6/6e/Takeshi_Goda.gif/150px-Takeshi_Goda.gif" class="w-100 h-100" style="object-fit: cover;">
+                                <div class="text-muted text-center">Ngô Hoa Hòa</div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="m-1 p-1 border rounded-3 border-info">
+                                <label class="form-label text-center w-100 fw-bold">ps17622</label>
+                                <img src="https://upload.wikimedia.org/wikipedia/vi/2/24/Suneo.gif" class="w-100 h-100" style="object-fit: cover;">
+                                <div class="text-muted text-center">Ca Thành Nhân</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- form control -->
+            <form action="/security/register" method="post" class="col-md-8 m-1 p-3 border rounded-3" ng-app="register_app" ng-controller="registerControl" th:object="${account}">
+                <div class="row">
+                    <div class="col-8 d-flex flex-column justify-content-end">
+                    	<div class="mt-1 w-100" th:utext="${message}"></div>
+                        <div class="mt-1">
+                            <label for="username" class="form-label fw-bold">Tên đăng nhập</label>
+                            <input id="username" th:field="*{username}" type="text" class="form-control" ng-model="account.username">
+                        </div>
+                        <div class="mt-1">
+                            <label for="password" class="form-label fw-bold">Mật khẩu người dùng</label>
+                            <div class="input-group">
+                                <input id="password" th:field="*{password}" type="password" class="form-control" ng-model="account.password">
+                                <span class="input-group-text">
+                                    <i class="fa-solid fa-eye-slash" onclick="showPass('#password',this)"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mt-1">
+                            <label for="fullname" class="form-label fw-bold">Họ và Tên</label>
+                            <input id="fullname" th:field="*{fullname}"  type="text" class="form-control" ng-model="account.fullname">
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <label for="img_image" class="mt-1 fw-bold">Hình ảnh</label>
+                        <img ng-src="{{account.photo ? account.photo : defaultImg}}" alt="{{account.fullname}}" id="img_image" class="w-100 h-100 rounded-3" style="object-fit: cover;">
+                    </div>
+                </div>
+                <div class="mt-1">
+                    <label for="photo" class="form-label fw-bold">Hình ảnh</label>
+                    <input id="photo" th:field="*{photo}"  type="text" class="form-control" ng-model="account.photo">
+                </div>
+                <div class="mt-1">
+                    <label for="email" class="form-label fw-bold">Email người dùng</label>
+                    <input id="email" th:field="*{email}" type="email" class="form-control" ng-model="account.email">
+                </div>
+                <!-- button-group actions -->
+                <div class="d-flex  justify-content-between align-items-center rounded-3 border p-1 mt-1">
+                    <div class="fw-bold">Actions</div>
+                    <div class="btn-group bg-dark rounded-3">
+                        <button class="btn btn-outline-success" ng-click="create()" type="submit">
+                            <i class="fa-solid fa-bookmark"></i>&nbsp;register
+                        </button>
+                        <button class="btn btn-outline-secondary" type="reset">
+                            <i class="fa-solid fa-rotate"></i>&nbsp;reset
+                        </button>
+                        <a class="btn btn-outline-light" href="javascript:location.reload()">
+                            <i class="fa-solid fa-arrow-rotate-right"></i>&nbsp;reload
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <script>
+            const defaultImg = "https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-portrait-176256935.jpg";
+            const register_app = angular.module("register_app", ["ngRoute"]);
+
+            register_app.controller("registerControl", function($scope){
+                $scope.defaultImg = defaultImg;
+            });
+        </script>
+    </main>
+</body>
+</html>

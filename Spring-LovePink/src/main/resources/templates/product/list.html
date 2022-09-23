@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"  th:replace="~{/index.html::dynamic(~{::main})}">
+<body>
+	<main ng-app="shopping-cart-app" ng-controller="shopping-cart-ctrl">
+		<!-- FILTER -->
+		<div class="bg-dark text-warning p-1">
+			<form action="/product/list/filter" class="d-flex justify-content-between align-items-center" method="get">
+				<label class="text-start text-primary fw-bolder">Bộ lọc</label>
+				<div class="text-end">
+					<label class="fw-bold ms-1">
+						Sắp xếp giảm(<input type="checkbox" class="text-end" name="desc">)
+					</label>					
+					<select class="text-end" name="field">
+						<option value="name">Tên sản phẩm</option>
+						<option value="price">Giá sản phẩm</option>
+					</select>	
+					<button type="submit">Lọc</button>
+					<label class="fw-bold ms-1">Số lượng</label>
+					<input type="number" class="text-end" value="8" name="size">
+					<button type="submit">Lọc</button>
+					<label class="fw-bold ms-1">Trang số</label>
+					<input type="number" class="text-end" value="0" name="page">
+					<button type="submit">Lọc</button>
+				</div>
+			</form>
+		</div>
+		
+		<!-- CATEGORIES -->
+		<div class="accordion accordion-flush mt-2 mb-2 border rounded-3" id="accordionCategory">
+		    <div class="accordion-item bg-warning">
+		        <h2 class="accordion-header" id="flush-headingOne">
+		            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+		                data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+		                Loại Hàng
+		            </button>
+		        </h2>
+		        <div id="flush-collapseOne" class="accordion-collapse collapse"  aria-labelledby="flush-headingOne" data-bs-parent="#accordionCategory">
+		            <div class="accordion-body">
+		                <div th:replace="@{/layout/_category.htm}"></div>
+		            </div>
+		        </div>
+		    </div>
+		</div>
+		
+		<!-- CONTENTS -->
+		<div class="row mt-2">
+			<div class="col-sm-3 p-1" th:each="p:${items}">
+				<div class="card border border-warning">
+					<a th:href="@{|/product/detail/${p.id}|}">
+						<img class="card-img-top" th:src="${p.image}" alt="Card image" style="width: 100%">
+					</a>
+					<div class="card-body border-top">
+						<h5 class="card-title text-center" th:text="${p.name}"></h5>
+						<div class="d-flex align-items-center">
+							<span class="card-text" th:text=${p.price}></span>
+							<div class="ms-auto"></div>
+							<button th:attr="ng-click = @{|cart.add(${p.id})|}" class="btn btn-success">
+								<i class="fa-solid fa-cart-plus"></i>&nbsp;add
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Cart -->
+		<div class="offcanvas offcanvas-start p-3" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel" th:if="${#request.remoteUser}">
+		    <!-- header -->
+		    <div class="offcanvas-header flex-wrap">
+		    	<h5 class="offcanvas-title" id="offcanvasExampleLabel">
+		        	Giỏ hàng
+	        	</h5>
+	        	(<span class="bage">{{cart.count}} Items x {{cart.amount|number:2}}</span>)
+		        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+		        
+		        <div class="mt-2 w-100">		        
+				    <input type="hidden" id="username" th:value="${#request.remoteUser}" >
+				    <div class="mt-1">
+				    	<label class="fw-bold">Địa chỉ đặt hàng</label>
+				    	<input type="text" ng-model="address" class="form-control" >
+				    </div>
+		        </div>
+		    </div>
+		    <!-- body -->
+		    <div class="offcanvas-body">
+		        <div class="card mb-3 w-100" ng-repeat="item in cart.items">
+				    <div class="row g-0">
+				        <div class="col-md-4">
+				            <img ng-src="{{item.image}}" class="img-fluid rounded-start m-auto" alt="{{item.name}}">
+				        </div>
+				        <div class="col-md-8 position-relative">
+				            <div class="card-body">
+				                <table>
+				                	<tr>
+				                		<td colspan="3" class="text-center border-bottom">
+				                			<h5 class="card-title m-0 mt-1" ng-bind="item.name"></h5>
+			                			</td>
+		                			</tr>
+				                	<tr>
+				                		<td><span class="card-text" ng-bind="item.price"></span></td>
+				                		<td><input ng-change="cart.saveToLocalStorage()" ng-model="item.qty" type="number" min="1" style="width: 64px;"></td>
+				                		<td><span class="ms-1">${{item.qty * item.price|number:2}}</span></td>
+			                		</tr>
+				                </table>
+				                <div class="position-absolute end-0 top-0">
+				                	<button ng-click="cart.remove(item.id)" class="btn btn-danger" style="font-size: .8em;">
+				                        <i class="fa-solid fa-trash-can"></i>
+				                    </button>
+				                </div>
+				            </div>
+				        </div>
+				    </div>
+				</div>
+		    </div>
+			<!-- footer -->
+			<div class="offcanvas-footer text-end">
+				<a ng-click="order.purchase()" class="btn btn-success">Checkout</a>
+        		<button ng-click="cart.clear()" class="btn btn-danger">Clear</button>
+			</div>
+		</div>
+		
+		<!-- Angular script cart app -->
+		<script type="text/javascript">
+			const app = angular.module("shopping-cart-app", []);
+	
+			app.controller("shopping-cart-ctrl", function($scope, $http) {
+	
+				$scope.cart = {items: [],add(id) {
+						var item = this.items.find(item => item.id == id);
+						if (item) {
+							item.qty++;
+							this.saveToLocalStorage();
+						} else {
+							$http.get(`/rest/products/${id}`).then(resp => {
+								resp.data.qty = 1;
+								this.items.push(resp.data);
+								this.saveToLocalStorage();
+							})
+	
+						}
+					},get count() {return this.items
+							.map(item => item.qty)
+							.reduce((total, qty) => total += qty, 0);
+					},
+					get amount() {
+						return this.items
+							.map(item => item.qty * item.price)
+							.reduce((total, qty) => total += qty, 0);
+					},
+	
+					saveToLocalStorage() {
+						var json = JSON.stringify(angular.copy(this.items));
+						localStorage.setItem("cart", json);
+					},
+					loadFromLocalStorage() {
+						var json = localStorage.getItem("cart");
+						this.items = json ? JSON.parse(json) : [];
+					},
+					remove(id) {
+						var index = this.items.findIndex(item => item.id == id);
+						this.items.splice(index, 1);
+						this.saveToLocalStorage();
+					},
+					clear() {
+						this.items = [];
+						this.saveToLocalStorage();
+	
+					}
+				}
+				$scope.cart.loadFromLocalStorage();
+				$scope.order = {
+					createDate: new Date(),
+					address: "Unknown",
+					account: { username: document.querySelector("#username").value },
+					get orderDetails() {
+						return $scope.cart.items.map(item => {
+							return {
+								product: { id: item.id },
+								price: item.price,
+								quantity: item.qty
+							}
+						})
+					}, purchase() {
+						this['address']=$scope.address ? $scope.address : this['address']
+						var order = angular.copy(this);
+						//thực hiện đặt hàng
+						$http.post("/rest/orders", order).then(resp => {
+							alert("Đặt hàng thành công");
+							$scope.cart.clear();
+							location.href = "/order/detail/" + resp.data.id
+						}).catch(error => {
+							alert("Đặt hàng lỗi"),
+								console.log(error)
+						})
+					}
+				}
+			})
+		</script>
+	</main>
+</body>
+</html>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html xmlns="http://www.thymleaf.org" th:replace="~{/index::dynamic(~{::main})}">
+
+<head>
+    <meta charset="UTF-8">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+    <!-- Angular JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-route.min.js"></script>
+    <!-- Fontawesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css"
+        integrity="sha512-1sCRPdkRXhBV2PBLUdRb4tMg1w2YPf37qatUFeS7zlBy7jJI8Lf4VHwWfZZfpXtYSLy85pkm9GaYVYMfw5BC1A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- ----------------------------------- -->
+    <title>manager accounts</title>
+</head>
+
+<body>
+    <div class="container-xxl bg-warning">
+       <main>
+            <div ng-app="appAccount" ng-controller="accountControl" class="w-100 overflow-auto">
+                <!-- SUBJECT -->
+                <h1 class="fw-bold text-center">QUẢN LÝ PHÂN QUYỀN - TÀI KHOẢN</h1>
+
+                <!-- CONTENTS -->
+                <h2 class="text-start">Thông tin nội dung</h2>
+                <h5 class="text-warning p-2 ps-3 m-0 bg-dark rounded-3" ng-bind="message"></h5>
+                <div class="row">
+                    <div class="col-4 mt-auto">
+                        <h3 class="text-center fw-bolder text-white">Lọc thông tin</h3>
+                        <div class="w-100 border rounded-3 p-2">
+                            <div class="mt-1 pb-3 border-bottom">
+                                <label for="" class="form-label fw-bold">Search like fullname</label>
+                                <input type="text" class="form-control" ng-model="fil.fullname">
+                            </div>
+                            <div class="mt-1 row align-items-center">
+                                <div class="col-4 text-end fw-bold">Danh sách: </div>
+                                <div class="col-8 text-end">
+                                    <label class="ms-1">Tổng:&nbsp;</label>
+                                    (<span ng-bind="accounts.length"></span>)
+                                    &nbsp;
+                                    <label class="ms-1">Thực tế:&nbsp;</label>
+                                    (<span ng-bind="(accounts|filter:{fullname:fil.fullname}).length"></span>)
+                                </div>
+                            </div>
+                            <div class="mt-1 row align-items-center">
+                                <div class="col-4 text-end fw-bold">Hiển thị: </div>
+                                <div class="col-8">
+                                    <input type="number" class="form-control text-end" ng-model="fil.quantity" ng-init="fil.quantity=5" min="0"
+                                         max="{{(accounts|filter:{fullname:fil.fullname}).length}}">
+                                </div>
+                            </div>
+                            <div class="mt-1 row align-items-center">
+                                <div class="col-4 text-end fw-bold">Trang số: </div>
+                                <div class="col-8">
+                                    <input type="number" class="form-control text-end"  ng-model="fil.page" ng-init="fil.page=0" min="0"
+                                        max="{{( (accounts|filter:{fullname:fil.fullname}).length - (accounts|filter:{fullname:fil.fullname}).length % fil.quantity ) / fil.quantity}}">
+                                </div>
+                            </div>
+                            <div class="mt-1">
+                                <div class="row align-items-center">
+                                    <div class="col-4 text-end fw-bold">Sắp xếp: </div>
+                                    <div class="col-8">
+                                        <select class="form-select" ng-model="fil.orderBy" ng-init="fil.orderBy='username'">
+                                            <option class="bg-danger text-center fw-bold">A-Z</option>
+                                            <option class="text-end" value="username">USERNAME ascending➡</option>
+                                            <option class="text-end" value="fullname">FULLNAME ascending➡</option>
+                                            <option class="text-end" value="email">EMAIL ascending➡</option>
+                                            <option class="bg-danger text-center fw-bold">Z-A</option>
+                                            <option class="text-start" value="-username">⬅descending USERNAME</option>
+                                            <option class="text-start" value="-fullname">⬅descending FULLNAME</option>
+                                            <option class="text-start" value="-email">⬅descending EMAIL</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-2 w-100 border rounded-3 p-2 mb-1">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="showAllPass" ng-model="fil.showAllPass">
+                                <label class="form-check-label" for="showAllPass">Show all users're password</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-8">
+                        <form action="" class="m-1 p-3 border rounded-3" >
+                            <div class="row">
+                                <div class="col-8 d-grid">
+                                    <div class="mt-1">
+                                        <label for="username" class="form-label fw-bold">Tên đăng nhập</label>
+                                        <input id="username" name="username" type="text" class="form-control" ng-model="account.username">
+                                    </div>
+                                    <div class="mt-1">
+                                        <label for="password" class="form-label fw-bold">Mật khẩu người dùng</label>
+                                        <div class="input-group">
+                                            <input id="password" name="password" type="password" class="form-control" ng-model="account.password">
+                                            <span class="input-group-text">
+                                                <i class="fa-solid fa-eye-slash" onclick="showPass('#password',this)"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-1">
+                                        <label for="fullname" class="form-label fw-bold">Họ và Tên</label>
+                                        <input id="fullname" name="fullname" type="text" class="form-control" ng-model="account.fullname">
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <label for="img_image" class="mt-1 fw-bold">Hình ảnh</label>
+                                    <img ng-src="{{account.photo ? account.photo : defaultImg}}" alt="{{account.fullname}}" id="img_image" class="w-100 h-100 rounded-3" style="object-fit: cover;">
+                                </div>
+                            </div>
+                            <div class="mt-1">
+                                <label for="photo" class="form-label fw-bold">Hình ảnh</label>
+                                <input id="photo" name="photo" type="text" class="form-control" ng-model="account.photo">
+                            </div>
+                            <div class="mt-1">
+                                <label for="email" class="form-label fw-bold">Email người dùng</label>
+                                <input id="email" name="email" type="email" class="form-control" ng-model="account.email">
+                            </div>
+                            <div class="mt-1 d-flex bg-warning p-2" id="roles">
+                                <label for="roles" class="form-label fw-bold">Quyền hạn:&nbsp;</label>
+                                <div class="ms-auto"></div>
+                                <div ng-repeat="role in roles">
+                                    <label for="{{role.id}}" class="ms-2 form-label" ng-bind="role.name"></label>  
+                                    <input type="checkbox" id="{{role.id}}" name="authorities" class="ms-1 form-check-input" value="{{role.id}}" ng-checked="hasAnyRole(role.id)">
+                                </div>
+                            </div>
+                            <!-- button-group actions -->
+                            <div class="d-flex  justify-content-between align-items-center rounded-3 border p-1 mt-1">
+                                <div class="fw-bold">Actions</div>
+                                <div class="btn-group bg-dark rounded-3">
+                                    <button class="btn btn-outline-success" ng-click="create()" type="button">
+                                        <i class="fa-solid fa-bookmark"></i>&nbsp;save
+                                    </button>
+                                    <button class="btn btn-outline-warning" ng-click="update(account.username)" type="button">
+                                        <i class="fa-solid fa-upload"></i>&nbsp;update
+                                    </button>
+                                    <button class="btn btn-outline-danger" ng-click="delete(account.username)" type="button">
+                                        <i class="fa-solid fa-trash-can"></i>&nbsp;delete
+                                    </button>
+                                    <button class="btn btn-outline-secondary" type="reset">
+                                        <i class="fa-solid fa-rotate"></i>&nbsp;reset
+                                    </button>
+                                    <a class="btn btn-outline-light" href="javascript:location.reload()">
+                                        <i class="fa-solid fa-arrow-rotate-right"></i>&nbsp;reload
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- LIST CONTENTS -->
+                <table class="table table-hover table-dark">
+                    <thead class="border-bottom border-info">
+                        <!-- Heading and columns name -->
+                        <tr class="text-center" ng-model="fil.orderBy">
+                            <th class="text-uppercase">Image</th>
+                            <th class="text-uppercase">No</th>
+                            <th class="text-uppercase">Username</th>
+                            <th class="text-uppercase">Password</th>
+                            <th class="text-uppercase">Fullname</th>
+                            <th class="text-uppercase">Email</th>
+                            <th class="text-uppercase">Authorities</th>
+                            <th class="text-uppercase">Action</th>
+                        </tr>
+                    </thead>
+                    <!-- Show data -->
+                    <tbody>
+                        <tr style="vertical-align: baseline;" ng-repeat="(index, e) in accounts | filter:{fullname:fil.fullname} | orderBy:fil.orderBy | limitTo: fil.quantity:fil.page*fil.quantity" >
+                            <td style="max-width: 64px;"><img ng-src="{{e.photo ? e.photo : defaultImg}}" alt="{{e.name}}" class="w-100 h-100" style="object-fit: cover;"></td>
+                            <td class="text-center" ng-bind="index"></td>
+                            <td ng-bind="e.username"></td>
+                            <td ng-bind="fil.showAllPass ? e.password : '********💤'"></td>
+                            <td ng-bind="e.fullname"></td>
+                            <td ng-bind="e.email"></td>
+                            <td class="text-end"><span class="ms-1" ng-repeat="authority in e.authorities" ng-bind="authority.role.name"></span></td>
+                            <td>
+                                <div class="d-flex">
+                                    <button type="button" ng-click="read(e)" class="m-1 btn btn-outline-primary">read</button>
+                                    <button type="button" ng-click="delete(e.username)" class="m-1 btn btn-outline-danger">delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <script>
+                const defaultImg = "https://media.istockphoto.com/vectors/default-profile-picture-avatar-photo-placeholder-vector-illustration-vector-id1223671392?k=20&m=1223671392&s=612x612&w=0&h=lGpj2vWAI3WUT1JeJWm1PRoHT3V15_1pdcTn2szdwQ0=";
+                const hostio = "http://localhost:8080";
+                const entity = "rest/accounts";
+    
+                const appAccount = angular.module("appAccount", ["ngRoute"]);
+                appAccount.controller("accountControl", function ($scope, $http) {
+                    $scope.defaultImg = defaultImg;
+                    // get data on host
+                    $http.get(getLink(null)).then(
+                        (result) => {
+                            if(result.status == 200){
+                                $scope.refresh();
+                                $scope.roles = result.data.roles;
+                                $scope.accounts = result.data.accounts;
+                            } else {
+                                console.log(`Status is ${result.status}`);
+                            }
+                        }
+                    ).catch((err) => console.error(`Cannot get data on host ${hostio + "/" + entity}`, err));
+    
+                    /**
+                     * ---------------------------------------------------------------- CRUD
+                     */
+                    // function create
+                    $scope.create = function () {
+                        $scope.setAccount();
+                        if(!$scope.exist()) $http.post(getLink(), $scope.account).then(result => {
+                            if(result.status == 200){
+                                $scope.accounts.unshift(result.data);
+                                $scope.refresh(`Save the ${$scope.account.fullname} successfully.`)
+                                $scope.account = {username: undefined};
+                            } else $scope.refresh(`Save ${$scope.account.fullname} failed!`)
+                        }).catch(err => {
+                            $scope.refresh(`Error saving ${$scope.account.fullname}!`)
+                            console.error(`Error saving ${$scope.account.fullname}`, err);
+                        }); else $scope.refresh(`${$scope.account ? $scope.account.username : 'account'} already exists, cannot save!`)
+                    }
+    
+                    // function update
+                    $scope.update = function (key) {
+                        $scope.setAccount();
+                        if($scope.exist()) $http.put(getLink(), $scope.account).then(result => {
+                            if(result.status == 200){
+                                $scope.accounts[$scope.getIndex(key)] = {...$scope.account}
+                                $scope.refresh(`Update the ${$scope.account.fullname} successfully.`)
+                                $scope.account = {username: undefined};
+                            } else $scope.refresh(`Update ${$scope.account.fullname} failed!`)
+                        }).catch(err => {
+                            $scope.refresh(`Error updating ${$scope.account.fullname}!`)
+                            console.error(`Error updating ${$scope.account.fullname}`, err);
+                        }); else $scope.refresh(`${$scope.account ? $scope.account.username : 'account'} doesn't exists, cannot update!`)
+                    }
+    
+                    // function delete
+                    $scope.delete = function (key) {
+                        if($scope.exist(key)) $http.delete(getLink(key)).then(result => {
+                            if(result.status == 200){
+                                $scope.accounts.splice($scope.getIndex(key),1);
+                                $scope.refresh(`Delete the ${$scope.account.fullname} successfully.`)  
+                                $scope.account = {};
+                            } else if(result.status == 500) $scope.refresh(`Cannot delete ${$scope.account.fullname}`)
+                        }).catch(err => {
+                            $scope.refresh(`Cannot delete ${$scope.account.fullname} references others!\n${err.data.message}`)
+                            console.error(`Error delete ${$scope.account.fullname}`, err);
+                        }); else $scope.refresh(`${$scope.account ? $scope.account.username : 'account'} doesn't exists, cannot delete!`)
+                        
+                        $scope.account = {username: undefined};
+                    }
+    
+    
+                    // _____________________________________________ SUPPORTS
+                    $scope.read = function(entity){
+                        $scope.account = {...entity};
+                        $scope.refresh(`Lấy thông tin ${$scope.account.fullname}`);
+                    }
+
+                    $scope.setAccount = function(){
+                        var authorities = []
+                        for (const role of $scope.roles) {
+                            if(document.getElementById(role.id).checked)
+                            authorities.push({role:role});
+                        } // change account.authorities
+                        $scope.account['authorities'] = authorities;
+                    }
+    
+                    // function refresh
+                    $scope.refresh = function (message) {
+                        $scope.message = message == null || message == undefined ? "form được làm mới." : message;
+                    }
+
+                    $scope.hasAnyRole = function(hasRole){
+                        if($scope.account) if($scope.account.authorities) 
+                            for(auth of $scope.account.authorities) 
+                                if(auth.role && auth.role.id == hasRole)
+                                    return true;
+                        return false;
+                    } 
+    
+                    $scope.getIndex = function(key){
+                        if(!key) {if(!$scope.account) return -1; key = $scope.account.username;}
+                        for (let index = 0; index < $scope.accounts.length; index++) {
+                            if($scope.accounts[index].username == key) return index;
+                        }
+                        return -1;
+                    }
+    
+                    // check entity exists
+                    $scope.exist = function(key){
+                        return this.getIndex(key) > -1;
+                    }
+                    
+                });
+    
+                // link support
+                function getLink(id) {
+                    return `${hostio}/${entity}${id == undefined || id == null ? "" : "/" + id}`;
+                };
+            </script>
+    
+       </main>
+    </div>
+</body>
+
+</html>

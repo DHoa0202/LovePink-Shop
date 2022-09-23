@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns="http://www.thymeleaf.org" th:replace="~{/index :: dynamic(~{::div})}">
+<head>
+<meta charset="UTF-8">
+<title>Account infomation</title>
+</head>
+<body>
+	<div class="d-flex">
+		<div class="m-auto" th:if="${#request.remoteUser}">
+			<h3>Authenication infomation</h3>
+			<ul>
+				<li><b>Username: </b><span th:utext="${#request.remoteUser}"></span></li>
+				<li><b>Roles: </b><span th:utext="${#request.userPrincipal.authorities}"></span></li>
+				<li><b>Authentication: </b><span
+					th:utext="${#request.getUserPrincipal()}"></span></li>
+				<hr>
+
+			</ul>
+		</div>
+	</div>
+</body>
+</html>
